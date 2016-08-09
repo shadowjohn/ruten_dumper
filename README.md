@@ -58,5 +58,5 @@ Line：shadowjohn<br>
 當然協助匯出會需要一點點費用，量多有優惠XD<br>
 </center>
 
-* Tue 2016 Aug 08 <FeatherMountain> - V1.0<br>
+* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0<br>
 - First version initial.<br>                  

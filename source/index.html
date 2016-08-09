@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <title> 露天拍賣匯出機 V1.0 (作者:羽山 http://3wa.tw) </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+  <script language="javascript" src="source/inc/javascript/jquery/jquery-1.8.3.min.js"></script>
+  <script src="source/inc/javascript/php/php.js" type="text/javascript"></script>
+
+<style>
+#output{
+  height:140px;
+  overflow:auto;
+  border:1px solid #000;
+}
+</style>
+
+<script>
+
+child_process = require('child_process');
+
+$(document).ready(function() {
+   
+   $("#go").click(function(){
+
+     
+      $("#output").html('');
+      var login_id = $("#login_id").val();      
+      var istry = "0";
+      switch($("#istry").prop("checked"))
+      {
+        case true:
+          istry="1";
+          break;
+        case false:
+          istry="0";
+          break;
+      }
+      //alert(login_id);
+      var spawn = require('child_process').spawn
+        , cmd   = spawn('source\\bin\\php\\php.exe', ['source\\run.php',login_id,istry] );
+      cmd.stdout.setEncoding('utf8');
+      cmd.stderr.setEncoding('utf8');
+      cmd.stdout.on('data', function(data) {
+        $("#output").append(data);
+        $("#output").scrollTop( $("#output").scrollHeight );
+        $scrollHeight=$("#output")[0].scrollHeight;
+	     	$("#output").animate({ scrollTop: $scrollHeight}, 0);
+      })
+      
+      cmd.stderr.on('data', function(data) {    
+        $("#output").append('stderr: ' + data+"<Br>");
+      })
+      
+      cmd.on('exit', function(code) {
+        $("#finish").append('exit code: ' + code);
+      })
+    //alert('b');
+   });
+});
+</script>
+</head>
+<body>
+<center>
+  露天拍賣下載匯出機程式<br>  
+</center>
+  <input type="button" value="Reload" onClick="location.replace('?');">
+  <br>
+  露天賣家帳號：<input type="text" value="shadowjohn" 
+  id="login_id" size="50" 
+  placeholder="請輸入賣家帳號，如：shadowjohn">
+  <br>
+  試用模式：<input type="checkbox" id="istry" checked>  
+  <input type="button" id="go" value="開始匯出">
+  <br>  
+  <pre id="output" style="text-align:left;overflow:auto;height:365px;"></pre>
+</center>
+</body>
+</html>
