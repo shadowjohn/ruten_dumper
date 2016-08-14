@@ -3,6 +3,7 @@ function getRutenItemInfo($URL){
   global $PP;
   global $SP;
   global $UID;
+  global $kind_name_big5;
   global $WGET;
   global $CURL;
   global $logtxt;
@@ -22,6 +23,9 @@ function getRutenItemInfo($URL){
   $OUTPUT['物品所在地']="";
   $OUTPUT['上架時間']="";
   $OUTPUT['內容']="";
+  $OUTPUT['照片網址1']="";
+  $OUTPUT['照片網址2']="";
+  $OUTPUT['照片網址3']="";
   $OUTPUT['照片']="";
   //商品編號-------------------------------------------
   $title = strip_tags(getDom($data,".item-number .content")[0]);
@@ -76,12 +80,26 @@ function getRutenItemInfo($URL){
   //ap_log($logtxt,print_r($OUTPUT,true));  
   //exit();
   //$OUTPUT['CMD']=$cmd;  
+  //照片網址123-------------------------------------------
+  $pgj = get_between_new($data,"RT.context = ",";");
+  $jpgj=json_decode($pgj,true);
+  $imgs=ARRAY();
+  $step=1;
+  foreach($jpgj['goods_img'] as $v)
+  {
+    if($v=="") continue;
+    $URL = "https://img.ruten.com.tw/{$v}";
+    //array_push($imgs,$URL);
+    $OUTPUT['照片網址'.$step]=$URL;
+    $step++;
+  }
+  
   //照片-------------------------------------------
   $pgj = get_between_new($data,"RT.context = ",";");
   $jpgj=json_decode($pgj,true);
   //$OUTPUT['照片']=print_r($jpgj,true); 
   //https://img.ruten.com.tw/s2/6/4f/ee/21613277213678_537.jpg
-  @mkdir("{$PP}{$SP}{$UID}{$SP}{$OUTPUT['商品編號']}",0777,true);
+  @mkdir("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}",0777,true);
   $imgs=ARRAY();
   foreach($jpgj['goods_img'] as $v)
   {
@@ -89,9 +107,9 @@ function getRutenItemInfo($URL){
     $URL = "https://img.ruten.com.tw/{$v}";
     $bn = basename($URL);
     array_push($imgs,$bn);
-    if(!is_file("{$PP}{$SP}{$UID}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
+    if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
     {
-      $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: _ts_id=3wagood\" \"{$URL}\" ";
+      $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: _ts_id=3wagood\" \"{$URL}\" ";
       `{$cmd}`;      
     }
   }
