@@ -66,9 +66,9 @@
   
   //&c=0&d=&o=2&m=1&p=2&k=
   //http://class.ruten.com.tw/user/index00.php?s=a0938160803&c=0&d=&o=2&m=1&p=2&k=    
-  $all_kind[0][count($all_kind[0])-1] = "http://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
-  $all_kind[1][count($all_kind[1])-1] = "index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
-  $all_kind[2][count($all_kind[2])-1] = "全部商品";
+  $all_kind[0][count($all_kind[0])] = "http://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
+  $all_kind[1][count($all_kind[1])] = "index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
+  $all_kind[2][count($all_kind[2])] = "全部商品";
   
   for($i=0;$i<count($all_kind[1]);$i++)
   {
@@ -89,13 +89,15 @@
   foreach($user_kinds as $kind_k=>$kind_v)
   {    
     $step++;
-    //if($step<11) continue;
-    
-    //if( $kind_v['name'] != 'BOSCH博世水平儀_測量儀器(42)') continue;
+    if($step<=8) continue;
+    if( $kind_v['name'] == '全部商品') continue;
+    if( $kind_v['name'] != '未分類商品(66)') continue;
     
     $kind_name_big5 = utf8tobig5($kind_v['name']);
+    //$kind_name_big5 = utf8tobig5("BOSCH");
     $kind_name_big5 = str_replace("?","",$kind_name_big5);
     $kind_name_big5 = str_replace("*","",$kind_name_big5);
+    //$kind_name_big5 = addslashes($kind_name_big5);
     
     if(count($user_kinds)!=1)
     {
@@ -116,9 +118,14 @@
       $kind_v['url']="index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
       $kind_v['name']='全部商品';
     }
-      
-    @mkdir("{$PP}{$SP}{$UID}",0777,true);          
-    file_put_contents("{$PP}{$SP}{$UID}{$SP}{$UID}_{$kind_name_big5}.xls","");
+     
+    @mkdir("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}",0777,true);
+    if(!is_dir("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}"))
+    {
+      echo "ERROR: {$kind_v['name']}";
+      exit();
+    }          
+    file_put_contents("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}.xls","");
     //print_r($user_kinds);
     //exit();
   
@@ -193,8 +200,8 @@
         //$OUTPUT[$i][$k]=utf8tobig5($OUTPUT[$i][$k]);
       }
     }
-    $output_file="{$PP}{$SP}{$UID}{$SP}{$UID}_{$kind_name_big5}.xls";
+    $output_file="{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}.xls";
     save_xls($output_file,$OUTPUT);
-    echo "Done... ".big5toutf8($output_file)."\n";
+    echo "\n\nDone... ".big5toutf8($output_file)." -> {$kind_v['name']}\n";
     //exit();
   }
