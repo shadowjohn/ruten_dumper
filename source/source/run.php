@@ -89,9 +89,9 @@
   foreach($user_kinds as $kind_k=>$kind_v)
   {    
     $step++;
-    if($step<=8) continue;
-    if( $kind_v['name'] == '全部商品') continue;
-    if( $kind_v['name'] != '未分類商品(66)') continue;
+    //if($step<=8) continue;
+    //if( $kind_v['name'] == '全部商品') continue;
+    //if( $kind_v['name'] != '未分類商品(66)') continue;
     
     $kind_name_big5 = utf8tobig5($kind_v['name']);
     //$kind_name_big5 = utf8tobig5("BOSCH");
