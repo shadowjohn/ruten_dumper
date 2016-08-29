@@ -2,7 +2,7 @@
 <h2>露天資料匯出機</h2>
 <br>
 <br>
-版本：V1.0
+版本：V1.1
 作者：羽山秋人 (http://3wa.tw)
 
 使用方式：<br>
@@ -57,6 +57,9 @@ Line：shadowjohn<br>
 <br>
 當然協助匯出會需要一點點費用，量多有優惠XD<br>
 </center>
+
+* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.1<br>
+- 修正18禁也可以匯出成功的功能.<br>    
 
 * Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0<br>
 - First version initial.<br>                  

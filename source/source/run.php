@@ -10,6 +10,8 @@
   $PWD=dirname(__FILE__);
   $WGET="{$PWD}{$SP}bin{$SP}wget.exe";
   $CURL="{$PWD}{$SP}bin{$SP}curl.exe";  
+  //cookies
+  $CKS="_ts_id=3wagood;adultchk=ok;bid_nick=3939889; login=1;";
   
   function ap_log($logtxt,$data)
   {
@@ -19,6 +21,11 @@
   $ini=parse_ini_file($inipath);
   @mkdir("{$ini['RUTEN_PATH']}",0777,true);
   $PP="{$ini['RUTEN_PATH']}";
+  if(is_file("{$PP}{$SP}18x_cookie.txt"))
+  {
+    //修正18禁也可以使用
+    $CKS = file_get_contents("{$PP}{$SP}18x_cookie.txt");
+  }
   if($argc!=3)
   {
     echo "必需要有會員id...\n";
@@ -51,7 +58,13 @@
 //   curl_exec($ch);
 //   $data = ob_get_contents();
 //   ob_end_clean();
-  $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: _ts_id=3wagood" "{$URL}"`;
+  
+  //adultchk:"ok"
+//   if(is_file("{$PP}{$SP}cookie.txt"))
+//   {
+//     file_put_contents("{$PP}{$SP}cookie.txt",";adultchk:ok;",FILE_APPEND);
+//   }
+  $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
   $data = str_replace("</a> ","</a>\n",$data);
         
   $data = str_replace("</font><a ","</font><aa \n",$data); 
@@ -132,8 +145,8 @@
     $URL = "http://class.ruten.com.tw/user/{$kind_v['url']}";
     echo $URL;
     
-    //$content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: _ts_id=3wagood" "{$URL}"`;
-    $content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: _ts_id=3wagood" "{$URL}"`;
+    //$content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: {$CKS}" "{$URL}"`;
+    $content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
     //$data = big5toutf8($content);
     $pgj = get_between_new($content,"RT.context = ",";");
     $jpgj = json_decode($pgj,true);
@@ -150,7 +163,7 @@
       $URL = "http://class.ruten.com.tw/user/{$kind_v['url']}&c=0&o=2&m=1&p={$page}";
       echo $URL;
       //exit();           
-      $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: _ts_id=3wagood" "{$URL}"`;        
+      $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;        
       
       //       ap_log($logtxt,$data);
       //       exit();
@@ -176,6 +189,7 @@
         }
         $item_info = getRutenItemInfo($links[$j]);
         print_r($item_info);
+        //exit();
         
         array_push($OUTPUT,$item_info);
       }
