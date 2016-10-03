@@ -115,15 +115,22 @@
     if(count($user_kinds)!=1)
     {
       if(
-        //$kind_v['name']=='全部商品'
+//         
+         //$kind_v['name']!='黑曜石貔貅神佛手鍊(7)' 
+//         $kind_v['name']!='G點按摩棒(839)' ||
+//         $kind_v['name']!='超火熱銷排行(186)' ||
+//         $kind_v['name']!='性愛潤滑液(279)' ||
+//         $kind_v['name']!='激情高潮多跳蛋(88)' ||
+//         $kind_v['name']!='無線遙控跳蛋(195)' ||
+//         $kind_v['name']!='男用丁字褲(80)' ||        
+//         $kind_v['name']!='精品按摩棒(249)'         
         //||
         //$kind_v['name']=='無法分類'
         //||
         //$kind_v['name']!='►汽車配件_收納'
-        1
-      )
-      {
-        //continue;
+        0
+      ){
+        continue;
       }
     }
     else
@@ -187,8 +194,9 @@
             $max_j=5;
           }
         }
+        echo sprintf("Now...%s : %d / %d ...<br>",$kind_v['name'],($j+1),$max_j);
         $item_info = getRutenItemInfo($links[$j]);
-        print_r($item_info);
+        //print_r($item_info);
         //exit();
         
         array_push($OUTPUT,$item_info);
@@ -207,13 +215,13 @@
     //$csv = utf8tobig5($csv);
     //file_put_contents("{$PP}{$SP}{$UID}{$SP}{$UID}_{$kind_name_big5}.csv",$csv);
     //原本想轉big5，好像不用了
-    for($i=0,$max_i=count($OUTPUT);$i<$max_i;$i++)
-    {
-      foreach($OUTPUT[$i] as $k=>$v)
-      {
-        //$OUTPUT[$i][$k]=utf8tobig5($OUTPUT[$i][$k]);
-      }
-    }
+//     for($i=0,$max_i=count($OUTPUT);$i<$max_i;$i++)
+//     {
+//       foreach($OUTPUT[$i] as $k=>$v)
+//       {
+//         //$OUTPUT[$i][$k]=utf8tobig5($OUTPUT[$i][$k]);
+//       }
+//     }
     $output_file="{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}.xls";
     save_xls($output_file,$OUTPUT);
     echo "\n\nDone... ".big5toutf8($output_file)." -> {$kind_v['name']}\n";

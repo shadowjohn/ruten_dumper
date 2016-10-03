@@ -71,14 +71,33 @@ function getRutenItemInfo($URL){
   //$cmd = addslashes($cmd);
   $cmd = htmlspecialchars_decode($cmd);
   $content_data = `{$cmd}`;
-  //$content_data = file_get_contents("{$PP}{$SP}CONTENT.txt");
+  //$content_data = file_get_contents("{$PP}{$SP}CONTENT.txt");  
   $content_data = str_replace_deep("\r","\n",$content_data);
   $content_data = str_replace_deep("\n\n","\n",big5toutf8(get_between_new($content_data,"<body>","</body>")));
   $content_data = str_replace(",","，",$content_data);
+  $OUTPUT['內容HTML']="{$content_data}";
   $content_data = br2nl($content_data);
   $content_data = strip_tags($content_data);
   $content_data = trim($content_data);  
   $OUTPUT['內容']="{$content_data}";
+  
+  //嘗試抓內文的圖片
+  $content_html = str_get_html($OUTPUT['內容HTML']);
+  $content_img_arr = ARRAY();  
+  foreach($content_html->find('img') as $element)
+  {
+    $PIC_URL = $element->src;
+    $bn = basename($PIC_URL);
+    array_push($content_img_arr,$PIC_URL);
+    if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
+    {
+      $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$PIC_URL}\" ";
+      echo "抓內容圖...: {$PIC_URL}";
+      `{$cmd}`;
+    }
+  }
+  $OUTPUT['內容圖片']=implode("\n",$content_img_arr);
+  
   //ap_log($logtxt,print_r($OUTPUT,true));  
   //exit();
   //$OUTPUT['CMD']=$cmd;  
