@@ -68,17 +68,32 @@
   $data = str_replace("</a> ","</a>\n",$data);
         
   $data = str_replace("</font><a ","</font><aa \n",$data); 
-  
-  preg_match_all('/a href=\"(.*)" target="_top">(.*)<\/a>\n/', $data,$all_kind);
+  $jd = json_decode($data,true);
+  //preg_match_all('/a href=\"(.*)" target="_top">(.*)<\/a>\n/', $data,$all_kind);
   //print_r($all_kind);
+  //exit();
+  //print_r($jd);
+  //exit();
   $user_kinds = ARRAY();
+  
+  foreach($jd['detail'] AS $k=>$v)
+  {
+    $d = ARRAY();
+    $d['url']="http://class.ruten.com.tw/user/index00.php?s={$UID}&d={$v['class_id']}&o=0&m=1";
+    $d['name']=$v['name'];
+    $d['totals']=$v['count'];
+    array_push($user_kinds,$d);
+  }
+  
   //pre_print_r($all_kind);
   //unset($all_kind[0][count($all_kind[0])-1]);
   //unset($all_kind[1][count($all_kind[1])-1]);
   //unset($all_kind[2][count($all_kind[2])-1]);
   
   //&c=0&d=&o=2&m=1&p=2&k=
-  //http://class.ruten.com.tw/user/index00.php?s=a0938160803&c=0&d=&o=2&m=1&p=2&k=    
+  //http://class.ruten.com.tw/user/index00.php?s=a0938160803&c=0&d=&o=2&m=1&p=2&k=
+  
+  //http://class.ruten.com.tw/user/index00.php?s=cck5988&d=5097679&o=0&m=1    
   $all_kind[0][count($all_kind[0])] = "http://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[1][count($all_kind[1])] = "index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[2][count($all_kind[2])] = "全部商品";
@@ -89,7 +104,8 @@
     $d['url']=$all_kind[1][$i];
     $d['name']=$all_kind[2][$i];
     $d['name'] = str_replace("/","_",$d['name']);
-    $d['name'] = str_replace(" ","",$d['name']);
+    $d['name'] = str_replace(" ","",$d['name']); 
+    $d['totals']=$jd['total'];   
     array_push($user_kinds,$d);
   }
 
@@ -105,18 +121,19 @@
     //if($step<=8) continue;
     //if( $kind_v['name'] == '全部商品') continue;
     //if( $kind_v['name'] != '未分類商品(66)') continue;
-    
-    $kind_name_big5 = utf8tobig5($kind_v['name']);
+    $kind_v['name'] = trim($kind_v['name']);
+    $kind_name_big5 = utf8tobig5($kind_v['name'])."({$kind_v['totals']})";
     //$kind_name_big5 = utf8tobig5("BOSCH");
     $kind_name_big5 = str_replace("?","",$kind_name_big5);
     $kind_name_big5 = str_replace("*","",$kind_name_big5);
     //$kind_name_big5 = addslashes($kind_name_big5);
-    
+    //print_r($user_kinds);
+    //exit();
     if(count($user_kinds)!=1)
     {
       if(
 //         
-         //$kind_v['name']!='黑曜石貔貅神佛手鍊(7)' 
+         0 //$kind_v['name']!='150x45荷重加強鐵架' 
 //         $kind_v['name']!='G點按摩棒(839)' ||
 //         $kind_v['name']!='超火熱銷排行(186)' ||
 //         $kind_v['name']!='性愛潤滑液(279)' ||
@@ -128,8 +145,10 @@
         //$kind_v['name']=='無法分類'
         //||
         //$kind_v['name']!='►汽車配件_收納'
-        0
+        
       ){
+        //echo "continue";
+        //exit();
         continue;
       }
     }
@@ -149,17 +168,23 @@
     //print_r($user_kinds);
     //exit();
   
-    $URL = "http://class.ruten.com.tw/user/{$kind_v['url']}";
-    echo $URL;
-    
+    $URL = "{$kind_v['url']}";
+    //echo $URL;
+    //exit();
     //$content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: {$CKS}" "{$URL}"`;
     $content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
     //$data = big5toutf8($content);
     $pgj = get_between_new($content,"RT.context = ",";");
     $jpgj = json_decode($pgj,true);
-        
+    //echo $content;
+    print_r($jpgj);
+    //exit();
     //總頁數=ceil($jpgj['page']['total']/$jpgj['page']['perPage'])
     $totals_page=ceil($jpgj['page']['total']/$jpgj['page']['perPage']);
+    if($jpgj['page']['total']==0)
+    {
+      continue;
+    }
     echo "總筆數={$jpgj['page']['total']}\n";
     echo "總頁數={$totals_page}\n";
     //exit(); 
@@ -167,8 +192,8 @@
     for($i=0,$max_i=$totals_page;$i<$max_i;$i++)
     {      
       $page=($i+1);
-      $URL = "http://class.ruten.com.tw/user/{$kind_v['url']}&c=0&o=2&m=1&p={$page}";
-      echo $URL;
+      $URL = "{$kind_v['url']}&p={$page}";
+      echo "內頁網址:{$URL}\n";
       //exit();           
       $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;        
       
@@ -183,6 +208,9 @@
       //       }  
       //$titles = getDom($data,".item-info h3 a");
       //print_r($titles);
+      //echo $data;
+      //exit();
+      //file_put_contents("C:\\temp\\a.txt",$data);
       $links= getDomF($data,".item-info h3 a","href");
       print_r($links);
       for($j=0,$max_j=count($links);$j<$max_j;$j++)

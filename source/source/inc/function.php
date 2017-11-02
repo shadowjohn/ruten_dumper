@@ -50,19 +50,19 @@ function getRutenItemInfo($URL){
   $title = trim($title);
   $OUTPUT['直標價']=$title;
   //尚餘數量-------------------------------------------
-  $title = strip_tags(getDom($data,".item-info-detail tbody td strong")[0]);
+  //$title = strip_tags(getDom($data,"strong[class='rt-text-isolated']")[1]);
+  $title = get_between_new($data,",\"g_num\":",",\"g_sold_num\"");
   $title = trim($title);
   $OUTPUT['尚餘數量']=$title;
   //物品所在地-------------------------------------------
-  $title = strip_tags(getDom($data,".location .content")[0]);
+  $title = strip_tags(getDom($data,"li[class='location']")[0]);
   $title = trim($title);
+  $title = str_replace("物品所在地：&nbsp;","",$title);
   $OUTPUT['物品所在地']=$title;
   //上架時間-------------------------------------------
-  $dtitle = strip_tags(getDom($data,".upload-time span .date")[0]);
-  $dtitle = trim($dtitle);
-  $ttitle = strip_tags(getDom($data,".upload-time span .time")[0]);
-  $ttitle = trim($ttitle);
-  $OUTPUT['上架時間']="{$dtitle} {$ttitle}";
+  $title = strip_tags(getDom($data,"li[class='upload-time']")[0]);
+  $title = trim($title);  
+  $OUTPUT['上架時間']="{$title}";
   //內容-------------------------------------------
   $iframe_src=trim(getDomF($data,"#embedded_goods_comments","src")[0]);  
   //容網址
@@ -106,10 +106,11 @@ function getRutenItemInfo($URL){
   $jpgj=json_decode($pgj,true);
   $imgs=ARRAY();
   $step=1;
-  foreach($jpgj['goods_img'] as $v)
+  foreach($jpgj['img_data'] as $v)
   {
     if($v=="") continue;
-    $URL = "https://img.ruten.com.tw/{$v}";
+    //$URL = "https://img.ruten.com.tw/{$v['ori']}";
+    $URL = "{$v['ori']}";
     //array_push($imgs,$URL);
     $OUTPUT['照片網址'.$step]=$URL;
     $step++;
@@ -118,14 +119,15 @@ function getRutenItemInfo($URL){
   //照片-------------------------------------------
   $pgj = get_between_new($data,"RT.context = ",";");
   $jpgj=json_decode($pgj,true);
-  //$OUTPUT['照片']=print_r($jpgj,true); 
+  //$OUTPUT['照片']=print_r($jpgj,true);
+  //print_r($jpgj); 
   //https://img.ruten.com.tw/s2/6/4f/ee/21613277213678_537.jpg
   @mkdir("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}",0777,true);
   $imgs=ARRAY();
-  foreach($jpgj['goods_img'] as $v)
+  foreach($jpgj['img_data'] as $v)
   {
-    if($v=="") continue;
-    $URL = "https://img.ruten.com.tw/{$v}";
+    if($v=="") continue;                       
+    $URL = "{$v['ori']}";
     $bn = basename($URL);
     array_push($imgs,$bn);
     if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
