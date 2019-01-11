@@ -56,7 +56,7 @@
   <title>{$UID} 露天買賣紀錄</title>
 </head>
 <body>
-帳號：{$UID}<br>
+露天帳號：{$UID}<br>
 交易總筆數：{$totals['totals']}<br>
 總交易金額：{總交易金額}<br>
 買東西金額：{買東西金額}<br>
