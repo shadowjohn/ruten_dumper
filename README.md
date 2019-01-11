@@ -59,7 +59,9 @@ Line：shadowjohn<br>
 </center>
 <br>
 <hr>
-
+# Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.4
+  - 可以取得使用者買賣歷史紀錄.
+  
 # Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3
   - 修正WGET無法下載https的問題.
   - 修正金額前有亂碼.

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <title> 露天拍賣匯出機 V1.3 (作者:羽山 http://3wa.tw) </title>
+  <title> 露天拍賣匯出機 V1.4 (作者:羽山 http://3wa.tw) </title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf8">
   <script language="javascript" src="source/inc/javascript/jquery/jquery-1.8.3.min.js"></script>
   <script src="source/inc/javascript/php/php.js" type="text/javascript"></script>
@@ -12,6 +12,10 @@
   overflow:auto;
   border:1px solid #000;
 }
+.red_button{
+  color:red;
+  font-weight:bold;
+}
 </style>
 
 <script>
@@ -19,41 +23,95 @@
 child_process = require('child_process');
 
 $(document).ready(function() {
-   
-   $("#go").click(function(){
-
-     
-      $("#output").html('');
-      var login_id = $("#login_id").val();      
-      var istry = "0";
-      switch($("#istry").prop("checked"))
+    $("#sell_buy_go").unbind("sell_buy_go");
+    $("#sell_buy_go").click(function(){
+      var run_status = $(this).val();
+      switch(run_status)
       {
-        case true:
-          istry="1";
+        case '停止匯出買賣紀錄':
+          $("#sell_buy_go").val('開始匯出買賣紀錄');
+          $("#sell_buy_go").removeClass('red_button');
+          $("#output").append('<br>停止匯出...');
+          window['run_buy_sell_cmd'].kill();
           break;
-        case false:
-          istry="0";
+        case '開始匯出買賣紀錄':
+          $("#sell_buy_go").val('停止匯出買賣紀錄');
+          $("#sell_buy_go").addClass('red_button');
+          $("#output").html('');
+          
+          var login_id = $("#login_id").val();      
+          var spawn = require('child_process').spawn;
+          window['run_buy_sell_cmd'] = spawn('source\\bin\\php\\php.exe', ['source\\run_buy_sell.php',login_id] );
+          window['run_buy_sell_cmd'].stdout.setEncoding('utf8');
+          window['run_buy_sell_cmd'].stderr.setEncoding('utf8');
+          window['run_buy_sell_cmd'].stdout.on('data', function(data) {
+            $("#output").append(data);
+            $("#output").scrollTop( $("#output").scrollHeight );
+            var scrollHeight=$("#output")[0].scrollHeight;
+    	     	$("#output").animate({ scrollTop: scrollHeight}, 0);
+          });
+          
+          window['run_buy_sell_cmd'].stderr.on('data', function(data) {    
+            $("#output").append('stderr: ' + data + "<br>");
+          });
+          
+          window['run_buy_sell_cmd'].on('exit', function(code) {
+            $("#finish").append('exit code: ' + code);
+            $("#sell_buy_go").val('開始匯出買賣紀錄');
+            $("#sell_buy_go").removeClass('red_button');
+          });
           break;
       }
-      //alert(login_id);
-      var spawn = require('child_process').spawn
-        , cmd   = spawn('source\\bin\\php\\php.exe', ['source\\run.php',login_id,istry] );
-      cmd.stdout.setEncoding('utf8');
-      cmd.stderr.setEncoding('utf8');
-      cmd.stdout.on('data', function(data) {
-        $("#output").append(data);
-        $("#output").scrollTop( $("#output").scrollHeight );
-        $scrollHeight=$("#output")[0].scrollHeight;
-	     	$("#output").animate({ scrollTop: $scrollHeight}, 0);
-      })
-      
-      cmd.stderr.on('data', function(data) {    
-        $("#output").append('stderr: ' + data+"<Br>");
-      })
-      
-      cmd.on('exit', function(code) {
-        $("#finish").append('exit code: ' + code);
-      })
+    });
+    $("#go").unbind("click");
+    $("#go").click(function(){
+      var run_status = $(this).val();
+      switch(run_status)
+      {
+        case '停止匯出':
+          $("#go").val('開始匯出');
+          $("#go").removeClass('red_button');
+          $("#output").append('<br>停止匯出...');
+          window['run_cmd'].kill();
+          break;
+        case '開始匯出':
+          $(this).val('停止匯出');
+          $(this).addClass('red_button');
+          $("#output").html('');
+          var login_id = $("#login_id").val();      
+          var istry = "0";
+          switch($("#istry").prop("checked"))
+          {
+            case true:
+              istry="1";
+              break;
+            case false:
+              istry="0";
+              break;
+          }
+          //alert(login_id);
+          var spawn = require('child_process').spawn;
+          window['run_cmd'] = spawn('source\\bin\\php\\php.exe', ['source\\run.php',login_id,istry] );
+          window['run_cmd'].stdout.setEncoding('utf8');
+          window['run_cmd'].stderr.setEncoding('utf8');
+          window['run_cmd'].stdout.on('data', function(data) {
+            $("#output").append(data);
+            $("#output").scrollTop( $("#output").scrollHeight );
+            var scrollHeight=$("#output")[0].scrollHeight;
+    	     	$("#output").animate({ scrollTop: scrollHeight}, 0);
+          });
+          
+          window['run_cmd'].stderr.on('data', function(data) {    
+            $("#output").append('stderr: ' + data + "<br>");
+          });
+          
+          window['run_cmd'].on('exit', function(code) {
+            $("#finish").append('exit code: ' + code);
+            $("#go").val('開始匯出');
+            $("#go").removeClass('red_button');
+          });
+          break;
+      }
     //alert('b');
    });
 });
@@ -63,7 +121,7 @@ $(document).ready(function() {
 <center>
   露天拍賣下載匯出機程式<br>  
 </center>
-  <input type="button" value="Reload" onClick="location.replace('?');">
+  <input style="position:absolute;right:15px;" type="button" value="Reload" onClick="location.replace('?');">
   <br>
   露天賣家帳號：<input type="text" value="shadowjohn" 
   id="login_id" size="50" 
@@ -71,6 +129,8 @@ $(document).ready(function() {
   <br>
   試用模式：<input type="checkbox" id="istry" checked>  
   <input type="button" id="go" value="開始匯出">
+  &nbsp;&nbsp;&nbsp;
+  <input type="button" id="sell_buy_go" value="開始匯出買賣紀錄">
   <br>  
   <pre id="output" style="text-align:left;overflow:auto;height:365px;"></pre>
 </center>

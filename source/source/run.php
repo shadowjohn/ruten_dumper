@@ -37,7 +37,7 @@
   $logtxt="{$ini['RUTEN_PATH']}{$SP}{$UID}{$SP}log.txt";
    
   $URL = "https://class.ruten.com.tw/user/class_frame.php?sid={$UID}";  
-  $ch = curl_init();
+  //$ch = curl_init();
 //   curl_setopt($ch, CURLOPT_URL, $URL);
 //   $RANDOM_USER_AGENT = sprintf("Mozilla/%d.%d (compatible; MSIE %d.%d; Windows NT %d.%d; SV1)",
 //                                           rand(3,5),

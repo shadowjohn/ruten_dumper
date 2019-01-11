@@ -17,6 +17,25 @@
       }
     }    
     return $data;
+  }
+  function my_money_format($data,$n=0) {
+    /*
+    from : http://herolin.twbbs.org/entry/better-than-number-format-for-php
+    傳入值為$data 就是你要轉換的數值，$n就是小數點後面的位數
+    除了排除這個問題，在使用number_format時發現如果設定小數位數四位，
+    如不足四數就會補零 。例如: 100000.12 會顯示  100,000.1200 ，
+    所以小弟也順便調整，可以把後面的零給取消掉。
+    在此提供給一樣遇到這問題的人一個方法(不一定是好方法，但一定是可行的方法)
+    */
+    $data1=number_format(substr($data,0,strrpos($data,".")==0?strlen($data):strrpos($data,".")));
+    $data2=substr( strrchr( $data, "." ), 1 );
+    if($data2==0) $data3="";
+      else {
+       if(strlen($data2)>$n) $data3=substr($data2,0,$n);
+         else $data3=$data2;
+      $data3=".".$data3;
+      }
+    return $data1;
   } 
   function array_htmlspecialchars(&$input)
   {
