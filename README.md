@@ -58,16 +58,18 @@ Line：shadowjohn<br>
 當然協助匯出會需要一點點費用，量多有優惠XD<br>
 </center>
 <br>
-----------------------------------------------------------------------<br>
-* Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3<br>
-- 修正WGET無法下載https的問題.<br>
-- 修正金額前有亂碼.<br>
+<hr>
+<pre>
+* Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3
+  - 修正WGET無法下載https的問題.
+  - 修正金額前有亂碼.
 
-* Mon Oct 03 2016 <FeatherMountain(http://3wa.tw)> - V1.2<br>
-- 拍賣內容如果使用者有自己的圖片連結，也可以下載嘍.<br>    
+* Mon Oct 03 2016 <FeatherMountain(http://3wa.tw)> - V1.2
+  - 拍賣內容如果使用者有自己的圖片連結，也可以下載嘍.<br>    
 
-* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.1<br>
-- 修正18禁也可以匯出成功的功能.<br>    
+* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.1
+  - 修正18禁也可以匯出成功的功能.
 
-* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0<br>
-- First version initial.<br>                  
+* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0
+  - First version initial.                 
+</pre>
