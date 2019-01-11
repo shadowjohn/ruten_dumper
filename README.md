@@ -59,15 +59,16 @@ Line：shadowjohn<br>
 </center>
 <br>
 <hr>
-* Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3
+
+# Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3
   - 修正WGET無法下載https的問題.
   - 修正金額前有亂碼.
 
-* Mon Oct 03 2016 <FeatherMountain(http://3wa.tw)> - V1.2
+# Mon Oct 03 2016 <FeatherMountain(http://3wa.tw)> - V1.2
   - 拍賣內容如果使用者有自己的圖片連結，也可以下載嘍.<br>    
 
-* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.1
+# Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.1
   - 修正18禁也可以匯出成功的功能.
 
-* Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0
+# Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0
   - First version initial.                 
