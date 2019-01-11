@@ -11,7 +11,7 @@ function getRutenItemInfo($URL){
   //$data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: _ts_id=3wagood" "{$URL}#auc"`;
   //echo $URL;
   //exit();
-  $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header "Cookie: {$CKS}" "{$URL}"`;
+  $data=`{$WGET} -O- -q --no-check-certificate --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header "Cookie: {$CKS}" "{$URL}"`;
   //$data = `{$CURL} --cookie-jar "{$PP}{$SP}cookie_curl.txt" "{$URL}" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0" -H "Cookie: _ts_id=3400390A3302350C3C0B;"`;          
   //print_r($data);
   //exit();
@@ -29,11 +29,14 @@ function getRutenItemInfo($URL){
   $OUTPUT['照片網址2']="";
   $OUTPUT['照片網址3']="";
   $OUTPUT['照片']="";
-  //商品編號-------------------------------------------
+  //商品編號-------------------------------------------  
+  //file_put_contents("C:\\ruten\\a.txt",$data);
   $title = strip_tags(getDom($data,".item-number .content")[0]);
   $title = trim($title);
   $title = str_replace_deep(" ","",$title);
-  $OUTPUT['商品編號']=$title;  
+  $OUTPUT['商品編號']=$title;
+  //print_r($OUTPUT);
+  //exit();  
   //拍賣網址-------------------------------------------
   $OUTPUT['拍賣網址']=$URL;
   //分類-------------------------------------------
@@ -48,6 +51,7 @@ function getRutenItemInfo($URL){
   //直標價-------------------------------------------
   $title = strip_tags(getDom($data,".item-purchase-stack strong")[0]);
   $title = trim($title);
+  $title = str_replace("&#36;","",$title);
   $OUTPUT['直標價']=$title;
   //尚餘數量-------------------------------------------
   //$title = strip_tags(getDom($data,"strong[class='rt-text-isolated']")[1]);
@@ -92,8 +96,9 @@ function getRutenItemInfo($URL){
     if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
     {
       $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$PIC_URL}\" ";
-      echo "抓內容圖...: {$PIC_URL}";
+      echo "抓內容圖...: {$PIC_URL} => {$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\n";
       `{$cmd}`;
+      //exit();
     }
   }
   $OUTPUT['內容圖片']=implode("\n",$content_img_arr);

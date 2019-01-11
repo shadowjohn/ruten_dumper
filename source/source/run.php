@@ -36,7 +36,7 @@
   $UID=$argv[1];
   $logtxt="{$ini['RUTEN_PATH']}{$SP}{$UID}{$SP}log.txt";
    
-  $URL = "http://class.ruten.com.tw/user/class_frame.php?sid={$UID}";  
+  $URL = "https://class.ruten.com.tw/user/class_frame.php?sid={$UID}";  
   $ch = curl_init();
 //   curl_setopt($ch, CURLOPT_URL, $URL);
 //   $RANDOM_USER_AGENT = sprintf("Mozilla/%d.%d (compatible; MSIE %d.%d; Windows NT %d.%d; SV1)",
@@ -79,7 +79,7 @@
   foreach($jd['detail'] AS $k=>$v)
   {
     $d = ARRAY();
-    $d['url']="http://class.ruten.com.tw/user/index00.php?s={$UID}&d={$v['class_id']}&o=0&m=1";
+    $d['url']="https://class.ruten.com.tw/user/index00.php?s={$UID}&d={$v['class_id']}&o=0&m=1";
     $d['name']=$v['name'];
     $d['totals']=$v['count'];
     array_push($user_kinds,$d);
@@ -91,10 +91,10 @@
   //unset($all_kind[2][count($all_kind[2])-1]);
   
   //&c=0&d=&o=2&m=1&p=2&k=
-  //http://class.ruten.com.tw/user/index00.php?s=a0938160803&c=0&d=&o=2&m=1&p=2&k=
+  //https://class.ruten.com.tw/user/index00.php?s=a0938160803&c=0&d=&o=2&m=1&p=2&k=
   
-  //http://class.ruten.com.tw/user/index00.php?s=cck5988&d=5097679&o=0&m=1    
-  $all_kind[0][count($all_kind[0])] = "http://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
+  //https://class.ruten.com.tw/user/index00.php?s=cck5988&d=5097679&o=0&m=1    
+  $all_kind[0][count($all_kind[0])] = "https://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[1][count($all_kind[1])] = "index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[2][count($all_kind[2])] = "全部商品";
   
@@ -127,13 +127,14 @@
     $kind_name_big5 = str_replace("?","",$kind_name_big5);
     $kind_name_big5 = str_replace("*","",$kind_name_big5);
     //$kind_name_big5 = addslashes($kind_name_big5);
-    //print_r($user_kinds);
-    //exit();
+//    print_r($user_kinds);
+//    exit();
     if(count($user_kinds)!=1)
     {
       if(
-//         
-         0 //$kind_v['name']!='150x45荷重加強鐵架' 
+//       
+         $kind_v['name']=="全部商品"   
+//         0 //$kind_v['name']!='150x45荷重加強鐵架' 
 //         $kind_v['name']!='G點按摩棒(839)' ||
 //         $kind_v['name']!='超火熱銷排行(186)' ||
 //         $kind_v['name']!='性愛潤滑液(279)' ||
@@ -154,7 +155,7 @@
     }
     else
     {
-      $kind_v['url']="index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
+      $kind_v['url']="https://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
       $kind_v['name']='全部商品';
     }
      
@@ -167,17 +168,21 @@
     file_put_contents("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}.xls","");
     //print_r($user_kinds);
     //exit();
-  
+    //https://class.ruten.com.tw/user/
     $URL = "{$kind_v['url']}";
     //echo $URL;
     //exit();
     //$content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: {$CKS}" "{$URL}"`;
-    $content=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
+    $CMD = "{$WGET} -O- -q --no-check-certificate --tries=2 --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header \"Cookie: {$CKS}\" \"{$URL}\"";
+    //echo $CMD;
+    $content=`{$CMD}`;
+    
+    //file_put_contents("C:\\ruten\\a.txt",$content);
     //$data = big5toutf8($content);
     $pgj = get_between_new($content,"RT.context = ",";");
     $jpgj = json_decode($pgj,true);
     //echo $content;
-    print_r($jpgj);
+    //print_r($jpgj);
     //exit();
     //總頁數=ceil($jpgj['page']['total']/$jpgj['page']['perPage'])
     $totals_page=ceil($jpgj['page']['total']/$jpgj['page']['perPage']);
@@ -195,7 +200,7 @@
       $URL = "{$kind_v['url']}&p={$page}";
       echo "內頁網址:{$URL}\n";
       //exit();           
-      $data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;        
+      $data=`{$WGET} -O- -q --tries=2 --no-check-certificate --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;        
       
       //       ap_log($logtxt,$data);
       //       exit();
