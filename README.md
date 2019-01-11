@@ -59,7 +59,6 @@ Line：shadowjohn<br>
 </center>
 <br>
 <hr>
-<pre>
 * Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3
   - 修正WGET無法下載https的問題.
   - 修正金額前有亂碼.
@@ -72,4 +71,3 @@ Line：shadowjohn<br>
 
 * Tue Aug 08 2016 <FeatherMountain(http://3wa.tw)> - V1.0
   - First version initial.                 
-</pre>
