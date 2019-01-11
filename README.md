@@ -57,6 +57,11 @@ Line：shadowjohn<br>
 <br>
 當然協助匯出會需要一點點費用，量多有優惠XD<br>
 </center>
+<br>
+* Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.3<br>
+- 修正WGET無法下載https的問題.<br>
+- 修正金額前有亂碼.<br>
+
 * Mon Oct 03 2016 <FeatherMountain(http://3wa.tw)> - V1.2<br>
 - 拍賣內容如果使用者有自己的圖片連結，也可以下載嘍.<br>    
 
