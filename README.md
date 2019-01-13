@@ -59,6 +59,7 @@ Line：shadowjohn<br>
 </center>
 <br>
 <hr>
+
 # Fri Jan 11 2019 <FeatherMountain(http://3wa.tw)> - V1.4
   - 可以取得使用者買賣歷史紀錄.
   
