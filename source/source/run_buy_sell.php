@@ -87,10 +87,9 @@
   {
     $tmp = "";
     $json = $RT->getBuySellJson($i);
-    //echo $json;
-    //exit();
     $jd = $RT->parseBuySellJson($json);
     //print_r($jd);
+    //exit();
     for($j=0,$max_j=count($jd);$j<$max_j;$j++)
     {
       switch($jd[$j]['行為'])
@@ -103,6 +102,7 @@
           break;
       }
       $total_money+=$jd[$j]['金額'];
+      $jd[$j]['金額']=str_replace("??","",$jd[$j]['金額']);
       $tmp = "
 <tr>
   <td>{$s}</td>
@@ -119,6 +119,7 @@
       file_put_contents($output_file,$tmp,FILE_APPEND);
     }
     echo sprintf("{$UID} 資料取得中... %d / %d ...\n",($i+1),$totals['total_pages']);
+
   }
   $tmp = "</tbody>";
   $tmp.= "</html>";

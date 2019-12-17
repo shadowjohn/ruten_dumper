@@ -11,7 +11,7 @@
       $URL = "https://mybid.ruten.com.tw/credit/point?{$this->UID}";
       //echo $URL;
       $data = `{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
-      $data = big5toutf8($data);
+      //$data = big5toutf8($data);
       //file_put_contents("C:\\temp\\a.txt",$data);
       $m = explode("頁 共",trim(strip_tags(getDom($data,"td[class='text_SplitPage_4']")[0])));
       //第 1/41 頁 共 801 筆
@@ -27,16 +27,36 @@
       global $WGET; 
       $URL = "https://mybid.ruten.com.tw/credit/point?{$this->UID}&all&all&{$PAGE}";
       $data = `{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;
-      $data = big5toutf8($data);
+      //$data = big5toutf8($data);
       $DATA = get_between_new($data,"var f_list=",";\n");
+      $DATA = mb_convert_encoding($DATA, 'UTF-8', 'UTF-8');
+      //echo $DATA;
+      //exit();
       //echo $DATA;
       //exit();
       return $DATA;
     }
+
+    public function json_last_error_msg() {
+        static $errors = array(
+            JSON_ERROR_NONE           => null,
+            JSON_ERROR_DEPTH          => 'Maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => 'Underflow or the modes mismatch',
+            JSON_ERROR_CTRL_CHAR      => 'Unexpected control character found',
+            JSON_ERROR_SYNTAX         => 'Syntax error, malformed JSON',
+            JSON_ERROR_UTF8           => 'Malformed UTF-8 characters, possibly incorrectly encoded'
+        );
+        $error = json_last_error();
+        return array_key_exists($error, $errors) ?  $errors[$error] : "Unknown error ({$error})";
+    }
+
     public function parseBuySellJson($json)
     {
       $jd = json_decode($json,true);
-      $OUTPUT=ARRAY();
+      //print_r($this->json_last_error_msg());
+      //print_r($jd);
+      //exit();
+      $OUTPUT=ARRAY();      
       for($i=0,$max_i=count($jd['OrderList']);$i<$max_i;$i++)
       {
         /*
@@ -77,7 +97,7 @@
         $d['時間'] = $jd['OrderList'][$i]['date'];
         $d['金額'] = str_replace("元","",$jd['OrderList'][$i]['money']);
         
-        array_push($OUTPUT,$d);
+        array_push($OUTPUT,$d);        
       }
       return $OUTPUT;
     } 
