@@ -800,12 +800,8 @@
       }
       return $tmp;      
     }
-  }  
-  function br2nl($data)
-  {
-    return preg_replace('/<br\\s*?\/??>/i','',$data);
   }
-  function save_xls($output_file,$ra)
+  function save_xls($output_file,$ra,$fields="",$display_fields="")
   {
     $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
     PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
@@ -816,10 +812,22 @@
     //$HEAD_CHECK_PAN = trim($LAST_SHEET->getCell(\"A1\")->getFormattedValue());
     //產生第一列
     $step=0;
-    foreach($ra[0] as $k=>$v)
+    
+    $mF = ARRAY();
+    $mFD = ARRAY();
+    if($fields=="")
+    {
+      foreach($ra[0] as $k=>$v)
+      {
+        array_push($mF,$k);
+        array_push($mFD,$k);
+      } 
+    }
+    
+    foreach($mFD as $v)
     {
       //產生第一列
-    	$LAST_SHEET->setCellValueExplicit("{$AZ[$step]}1", $k);
+    	$LAST_SHEET->setCellValueExplicit("{$AZ[$step]}1", $v, PHPExcel_Cell_DataType::TYPE_STRING);
       $step++;    	
     }
     //資料
@@ -827,9 +835,9 @@
     for($i=0,$max_i=count($ra);$i<$max_i;$i++)
     {
       $step=0;
-      foreach($ra[$i] as $k=>$v)
+      foreach($mF as $k)
       {
-        $LAST_SHEET->setCellValueExplicit("{$AZ[$step]}{$line}", $v);
+        $LAST_SHEET->setCellValueExplicit("{$AZ[$step]}{$line}", $ra[$i][$k], PHPExcel_Cell_DataType::TYPE_STRING);
         $step++;   
       }
       $line++;
@@ -837,4 +845,9 @@
     
     $LAST_SHEET = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');//20003格式
     $LAST_SHEET->save($output_file);
+  }  
+  function br2nl($data)
+  {
+    return preg_replace('/<br\\s*?\/??>/i','',$data);
   }
+  

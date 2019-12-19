@@ -25,10 +25,8 @@ function getRutenItemInfo($URL){
   $OUTPUT['物品所在地']="";
   $OUTPUT['上架時間']="";
   $OUTPUT['內容']="";
-  $OUTPUT['照片網址1']="";
-  $OUTPUT['照片網址2']="";
-  $OUTPUT['照片網址3']="";
-  $OUTPUT['照片']="";
+  $OUTPUT['照片網址']="";
+  
   //商品編號-------------------------------------------  
   //file_put_contents("C:\\ruten\\a.txt",$data);
   $jd = json_decode(getDom($data,"script[type=\"application/ld+json\"]")[0],true);
@@ -103,7 +101,7 @@ function getRutenItemInfo($URL){
   //容網址
   //
   $iframe_src = "https://goods.ruten.com.tw/item/{$iframe_src}";
-  echo $iframe_src;
+  //echo $iframe_src;
   //exit();  
   $cmd="{$WGET} -O - -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$iframe_src}\" ";
   //$cmd = addslashes($cmd);
@@ -116,18 +114,25 @@ function getRutenItemInfo($URL){
   $content_data = str_replace_deep("\r","\n",$content_data);
   $content_data = str_replace_deep("\n\n","\n",get_between_new($content_data,"<body>","</body>"));
   $content_data = str_replace(",","，",$content_data);
-  $OUTPUT['內容HTML']="{$content_data}";
+  $content_data = str_replace("+","＋",$content_data);
+  $content_data = str_replace(":","：",$content_data);
+  $content_data = str_replace("🔺"," ",$content_data);
+  $content_data = str_replace("➕"," ",$content_data);
+  $OUTPUT['內容(HTML)']=$content_data;
+  //file_put_contents("C:\\ruten\\".time().".txt",$content_data);
+  $DATA_HTML="{$content_data}";
   $content_data = br2nl($content_data);
   $content_data = strip_tags($content_data);
-  $content_data = trim($content_data);  
-  $OUTPUT['內容']="{$content_data}";
+  $content_data = trim($content_data);
+    
+  $OUTPUT['內容']=$content_data;
   
   
   //print_r($OUTPUT);
   //exit(); 
   
   //嘗試抓內文的圖片
-  $content_html = str_get_html($OUTPUT['內容HTML']);
+  $content_html = str_get_html($DATA_HTML);
   $content_img_arr = ARRAY();  
   foreach($content_html->find('img') as $element)
   {
@@ -152,16 +157,17 @@ function getRutenItemInfo($URL){
   $jpgj=json_decode($pgj,true);
   $imgs=ARRAY();
   $step=1;
+  $pics=ARRAY();
   foreach($jpgj['item']['images'] as $v)
   {
     if($v=="") continue;
     //$URL = "https://img.ruten.com.tw/{$v['ori']}";
     $URL = "{$v['original']}";
-    //array_push($imgs,$URL);
-    $OUTPUT['照片網址'.$step]=$URL;
-    $step++;
-    
+    array_push($pics,$URL);
+    //array_push($imgs,$URL);    
+    $step++;    
   }
+  $OUTPUT['照片網址']=implode("\n",$pics);
 
   //照片-------------------------------------------
   $pgj = get_between_new($data,"RT.context = ",";");
@@ -183,6 +189,6 @@ function getRutenItemInfo($URL){
       `{$cmd}`;      
     }
   }
-  $OUTPUT['照片']=implode(",",$imgs);
+  //$OUTPUT['照片']=implode(",",$imgs);
   return $OUTPUT; 
 }

@@ -126,12 +126,15 @@
     //$kind_name_big5 = utf8tobig5("BOSCH");
     $kind_name_big5 = str_replace("?","",$kind_name_big5);
     $kind_name_big5 = str_replace("*","",$kind_name_big5);
-    //$kind_name_big5 = addslashes($kind_name_big5);
+    $kind_name_big5 = str_replace("/","／",$kind_name_big5);
+    $kind_name_big5 = str_replace("\\","＼",$kind_name_big5);
+    $kind_name_big5 = addslashes($kind_name_big5);
 //    print_r($user_kinds);
 //    exit();
     if(count($user_kinds)!=1)
     {
       if(
+        0
 //       
          $kind_v['name']=="全部商品"   
 //         0 //$kind_v['name']!='150x45荷重加強鐵架' 
@@ -145,7 +148,7 @@
         //||
         //$kind_v['name']=='無法分類'
         //||
-        //$kind_v['name']!='►汽車配件_收納'
+        //$kind_v['name']!='未分類商品'
         
       ){
         //echo "continue";
