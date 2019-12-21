@@ -136,7 +136,7 @@
       if(
         0
 //       
-         $kind_v['name']=="全部商品"   
+//         $kind_v['name']=="全部商品";   
 //         0 //$kind_v['name']!='150x45荷重加強鐵架' 
 //         $kind_v['name']!='G點按摩棒(839)' ||
 //         $kind_v['name']!='超火熱銷排行(186)' ||
@@ -260,6 +260,12 @@
 //     }
     $output_file="{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}.xls";
     save_xls($output_file,$OUTPUT);
+    //print_r($OUTPUT);
+    
+    $output_ruten_file="{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$kind_name_big5}_ruten.xls";
+    save_ruten_xls($output_ruten_file,$OUTPUT);
+    //
+    //exit();
     echo "\n\nDone... ".big5toutf8($output_file)." -> {$kind_v['name']}\n";
     //exit();
   }

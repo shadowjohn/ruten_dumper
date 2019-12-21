@@ -23,6 +23,7 @@ function getRutenItemInfo($URL){
   $OUTPUT['直標價']="";
   $OUTPUT['尚餘數量']="";
   $OUTPUT['物品所在地']="";
+  $OUTPUT['物品新舊']="";
   $OUTPUT['上架時間']="";
   $OUTPUT['內容']="";
   $OUTPUT['照片網址']="";
@@ -55,6 +56,14 @@ function getRutenItemInfo($URL){
 
 )
   */
+  $title = $jd['description'];
+  $title = get_between_new($title,"物品狀態：","。");
+  if($title != "全新")
+  {
+    $title = "物品中描述";
+  }
+  $OUTPUT['物品新舊']=$title;
+  
   $title = $jd['productId'];
   $title = strip_tags($title);
   $title = trim($title);
@@ -82,6 +91,9 @@ function getRutenItemInfo($URL){
   //尚餘數量-------------------------------------------
   //$title = strip_tags(getDom($data,"strong[class='rt-text-isolated']")[1]);
   $jd1 = json_decode(get_between_new($data,"RT.context = ",";"),true);
+  //print_r($jd1);
+  //exit();
+
   
   $title = $jd1['item']['remainNum'];
   $title = trim($title);

@@ -845,6 +845,91 @@
     
     $LAST_SHEET = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');//20003格式
     $LAST_SHEET->save($output_file);
+  }
+  function save_ruten_xls($output_file,$ra)
+  {
+    global $base_dir;
+    global $SP;    
+    $inputFileName = "{$base_dir}{$SP}sample{$SP}AP.xls";
+    //echo "inputFileName: {$inputFileName}";
+      //  Read your Excel workbook
+    try {
+        $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objPHPExcel = $objReader->load($inputFileName);
+    } catch(Exception $e) {
+        die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
+    }
+    
+    //  Get worksheet dimensions
+    //$sheet = $objPHPExcel->getSheet(0);
+    $objPHPExcel->setActiveSheetIndex(0);
+    $AZ='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $LAST_SHEET= $objPHPExcel->getActiveSheet();
+    /*
+      [商品編號] => 21950031014905
+      [拍賣網址] => https://goods.ruten.com.tw/item/show?21950031014905
+      [分類] => 露天拍賣>女包、精品與女鞋>女鞋>女運動鞋>運動休閒鞋
+      [標題] => 現貨阿迪達斯Adidas阿迪達斯三葉草男鞋女鞋中高幫休閑運動鞋
+      [直標價] => 3500
+      [尚餘數量] => 462
+      [物品所在地] => 台灣.台北市
+      [上架時間] => 2019-12-10 17:21:35
+      [內容] => 
+      [照片網址] => 
+      [內容(HTML)] =>  
+      [內容圖片] => 
+    */
+    $start_line = 12;
+    for($i=0,$max_i=count($ra);$i<$max_i;$i++)
+    {
+      //print_r($ra);
+      $LAST_SHEET->setCellValueExplicit("A{$start_line}", '', PHPExcel_Cell_DataType::TYPE_STRING);
+      //標題
+      $LAST_SHEET->setCellValueExplicit("B{$start_line}", $ra[$i]['標題'], PHPExcel_Cell_DataType::TYPE_STRING);
+      //金額
+      $LAST_SHEET->setCellValueExplicit("C{$start_line}", $ra[$i]['直標價'], PHPExcel_Cell_DataType::TYPE_STRING);
+      //數量      
+      $LAST_SHEET->setCellValueExplicit("D{$start_line}", $ra[$i]['尚餘數量'], PHPExcel_Cell_DataType::TYPE_STRING);
+      //分類
+      $LAST_SHEET->setCellValueExplicit("E{$start_line}", "", PHPExcel_Cell_DataType::TYPE_STRING);
+      //內容
+      $LAST_SHEET->setCellValueExplicit("F{$start_line}", $ra[$i]['內容(HTML)'], PHPExcel_Cell_DataType::TYPE_STRING);
+      //新舊
+      $LAST_SHEET->setCellValueExplicit("G{$start_line}", $ra[$i]['物品新舊'], PHPExcel_Cell_DataType::TYPE_STRING);
+      //照片
+      $LAST_SHEET->setCellValueExplicit("H{$start_line}", $ra[$i]['照片網址'], PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("I{$start_line}", '', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("J{$start_line}", '', PHPExcel_Cell_DataType::TYPE_STRING);
+      //位置
+      $m = explode(".",$ra[$i]['物品所在地']);
+      $LAST_SHEET->setCellValueExplicit("K{$start_line}", end($m), PHPExcel_Cell_DataType::TYPE_STRING);
+      //買家下標評價
+      $LAST_SHEET->setCellValueExplicit("L{$start_line}", '0', PHPExcel_Cell_DataType::TYPE_STRING);
+      //限制買方負評多少次以上，就不能下標
+      $LAST_SHEET->setCellValueExplicit("M{$start_line}", '1', PHPExcel_Cell_DataType::TYPE_STRING);
+      //限制買方棄標多少次以上，就不能下標
+      $LAST_SHEET->setCellValueExplicit("N{$start_line}", '1', PHPExcel_Cell_DataType::TYPE_STRING);
+      
+      $LAST_SHEET->setCellValueExplicit("O{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("P{$start_line}", 'y', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("Q{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("R{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("S{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("T{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("U{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("V{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("W{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("X{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("Y{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("Z{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("AA{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("AB{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $LAST_SHEET->setCellValueExplicit("AC{$start_line}", 'n', PHPExcel_Cell_DataType::TYPE_STRING);
+      $start_line++;
+    }
+    $LAST_SHEET = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');//20003格式
+    $LAST_SHEET->save($output_file);
   }  
   function br2nl($data)
   {
