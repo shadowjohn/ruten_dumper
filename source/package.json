@@ -2,7 +2,7 @@
   "name": "nw-demo",
   "main": "index.html",
   "window": {
-    "show_in_taskbar" : false,
+    "show_in_taskbar" : true,
     "toolbar": false,
     "position": "center",
     "resizable": false,

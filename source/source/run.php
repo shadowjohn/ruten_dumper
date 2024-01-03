@@ -96,6 +96,7 @@
   //https://class.ruten.com.tw/user/index00.php?s=cck5988&d=5097679&o=0&m=1    
   $all_kind[0][count($all_kind[0])] = "https://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[1][count($all_kind[1])] = "index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
+  $all_kind[1][count($all_kind[1])] = "https://class.ruten.com.tw/user/index00.php?s={$UID}&c=0&d=&o=2&m=1&k=";
   $all_kind[2][count($all_kind[2])] = "全部商品";
   
   for($i=0;$i<count($all_kind[1]);$i++)
@@ -182,28 +183,68 @@
     
     //file_put_contents("C:\\ruten\\a.txt",$content);
     //$data = big5toutf8($content);
-    $pgj = get_between_new($content,"RT.context = ",";");
+    $pgj = get_between_new($content,"RT.context = ",";\n");
     $jpgj = json_decode($pgj,true);
-    //echo $content;
+    //file_put_contents("C:\\ruten\\a.txt",$jpgj);
+	//file_put_contents("C:\\ruten\\log.txt",print_r($jpgj,true));
     //print_r($jpgj);
     //exit();
+    //if(!isset($jpgj['page'])){
+    //    $jpgj['page']=ARRAY();
+    //    $jpgj['page']['total']='0';
+    //}
     //總頁數=ceil($jpgj['page']['total']/$jpgj['page']['perPage'])
-    $totals_page=ceil($jpgj['page']['total']/$jpgj['page']['perPage']);
-    if($jpgj['page']['total']==0)
+    //2024-01-03 一頁30筆
+    //print_r($jpgj);        
+    $tmp = reset($jpgj['class_data']);
+    $totals = $tmp['count'];
+    $totals_page=ceil($totals/30);
+    if($totals==0)
     {
       continue;
     }
-    echo "總筆數={$jpgj['page']['total']}\n";
+    echo "總筆數={$totals}\n";
     echo "總頁數={$totals_page}\n";
     //exit(); 
     $OUTPUT=ARRAY();    
+    $sellerId = $jpgj['sellerId'];
     for($i=0,$max_i=$totals_page;$i<$max_i;$i++)
     {      
       $page=($i+1);
       $URL = "{$kind_v['url']}&p={$page}";
       echo "內頁網址:{$URL}\n";
-      //exit();           
+      $parsed_url = parse_url($URL);      
+      // Query string parameter
+      parse_str($parsed_url['query'], $query_params);
+      // s = g0567 //帳號
+      // d = 6395491 //分類
+      print_r($query_params);
+      $kindId = $query_params['d'];
+      
+      //未分類是  0
+      $kindId = ($kindId=="")?"0":$kindId;
+      //2024-01-03 從服務取有哪些商品 ID
+      //https://rtapi.ruten.com.tw/api/search/v3/index.php/core/seller/7604838/prod?sort=rnk/dc&cateid.seller=6395491&limit=30&offset=1&_=1704295632902&_callback=
+      $URL = "https://rtapi.ruten.com.tw/api/search/v3/index.php/core/seller/{$sellerId}/prod?sort=rnk/dc&cateid.seller={$kindId}&limit=30&offset={$page}&_=".time()."&_callback=";
+      echo "商品服務列表網址:{$URL}\n";                  
+      //exit();
+      //https://class.ruten.com.tw/user/index00.php?s=g0567&d=6395491&o=0&m=1           
       $data=`{$WGET} -O- -q --tries=2 --no-check-certificate --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --keep-session-cookies --header "Cookie: {$CKS}" "{$URL}"`;        
+      $jdd = json_decode($data,true)['Rows'];
+      
+      $prod_ids = ARRAY();
+      $links = ARRAY();
+      foreach($jdd as $v){
+        array_push($prod_ids,$v['Id']);
+        $URL = "https://www.ruten.com.tw/item/show?{$v['Id']}";
+        array_push($links,$URL);
+      }
+      //print_r($links);
+      //exit();
+      //$URL = "https://rapi.ruten.com.tw/api/items/v2/list?gno=".implode(",",$prod_ids)."&level=simple";
+      
+      
+      //合併商品連結，再查一次取得商品細節
       
       //       ap_log($logtxt,$data);
       //       exit();
@@ -218,9 +259,11 @@
       //print_r($titles);
       //echo $data;
       //exit();
-      //file_put_contents("C:\\temp\\a.txt",$data);
-      $links= getDomF($data,".item-info h3 a","href");
-      print_r($links);
+      //file_put_contents("C:\\ruten\\a.txt",$data);
+      //exit();
+      //$links= getDomF($data,".rt-product-card a","href");
+      //print_r($links);
+      //exit();
       for($j=0,$max_j=count($links);$j<$max_j;$j++)
       {
         //here get contents
@@ -230,6 +273,7 @@
             $max_j=5;
           }
         }
+        echo ($istry=="1")?"試用模式最多抓五筆...<br>":"";
         echo sprintf("Now...%s : %d / %d ...<br>",$kind_v['name'],($j+1),$max_j);
         $item_info = getRutenItemInfo($links[$j]);
         //print_r($item_info);

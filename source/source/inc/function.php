@@ -9,9 +9,11 @@ function getRutenItemInfo($URL){
   global $logtxt;
   global $CKS;
   //$data=`{$WGET} -O- -q --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --save-cookies cookies.txt --header "Cookie: _ts_id=3wagood" "{$URL}#auc"`;
-  //echo $URL;
+  echo "<br>";
+  echo "商品網址: {$URL}";
+  echo "<br>";
   //exit();
-  $data=`{$WGET} -O- -q --no-check-certificate --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header "Cookie: {$CKS}" "{$URL}"`;
+  $data=`"{$WGET}" -O- -q --no-check-certificate --tries=2 --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0" --referer "{$URL}" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header "Cookie: {$CKS}" "{$URL}"`;
   //$data = `{$CURL} --cookie-jar "{$PP}{$SP}cookie_curl.txt" "{$URL}" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0" -H "Cookie: _ts_id=3400390A3302350C3C0B;"`;          
   //print_r($data);
   //exit();
@@ -90,7 +92,7 @@ function getRutenItemInfo($URL){
   $OUTPUT['直標價']=$title;  
   //尚餘數量-------------------------------------------
   //$title = strip_tags(getDom($data,"strong[class='rt-text-isolated']")[1]);
-  $jd1 = json_decode(get_between_new($data,"RT.context = ",";"),true);
+  $jd1 = json_decode(get_between_new($data,"RT.context = ",";\n"),true);
   //print_r($jd1);
   //exit();
 
@@ -106,18 +108,22 @@ function getRutenItemInfo($URL){
   //上架時間-------------------------------------------
   $title = $jd1['item']['postDateTime'];
   $title = trim($title);  
-  $OUTPUT['上架時間']="{$title}";  
+  $OUTPUT['上架時間']="{$title}";
+    
   //內容-------------------------------------------
-  $iframe_src=trim(getDomF($data,"#embedded_goods_comments","src")[0]);
+  //$iframe_src=trim(getDomF($data,"#embedded_goods_comments","src")[0]);
       
   //容網址
-  //
-  $iframe_src = "https://goods.ruten.com.tw/item/{$iframe_src}";
+  // https://www.ruten.com.tw/item/goods_comments.php?id=21902501541178&k=c8ec61c6&o=1694312783
+  // 網址藏在 RT.content 裡
+  // $jd1['item']['descriptionUrl']
+  
+  $iframe_src = $jd1['item']['descriptionUrl']; //"https://goods.ruten.com.tw/item/{$iframe_src}";
   //echo $iframe_src;
   //exit();  
-  $cmd="{$WGET} -O - -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$iframe_src}\" ";
+  $cmd="\"{$WGET}\" -O - -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$iframe_src}\" ";
   //$cmd = addslashes($cmd);
-  $cmd = htmlspecialchars_decode($cmd);
+  //$cmd = htmlspecialchars_decode($cmd);
   $content_data = `{$cmd}`;
   //file_put_contents("C:\\ruten\\a.txt",$content_data);
   //$content_data = file_get_contents("{$PP}{$SP}CONTENT.txt");
@@ -131,7 +137,7 @@ function getRutenItemInfo($URL){
   $content_data = str_replace("🔺"," ",$content_data);
   $content_data = str_replace("➕"," ",$content_data);
   $OUTPUT['內容(HTML)']=$content_data;
-  //file_put_contents("C:\\ruten\\".time().".txt",$content_data);
+  
   $DATA_HTML="{$content_data}";
   $content_data = br2nl($content_data);
   $content_data = strip_tags($content_data);
@@ -139,11 +145,12 @@ function getRutenItemInfo($URL){
     
   $OUTPUT['內容']=$content_data;
   
-  
+  //file_put_contents("C:\\ruten\\".time().".txt",$DATA_HTML);
   //print_r($OUTPUT);
   //exit(); 
   
   //嘗試抓內文的圖片
+  //file_put_contents("C:\\ruten\\HTML_".time().".txt",$DATA_HTML);
   $content_html = str_get_html($DATA_HTML);
   $content_img_arr = ARRAY();  
   foreach($content_html->find('img') as $element)
@@ -153,7 +160,7 @@ function getRutenItemInfo($URL){
     array_push($content_img_arr,$PIC_URL);
     if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
     {
-      $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$PIC_URL}\" ";
+      $cmd = "\"{$WGET}\" --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$PIC_URL}\" ";
       echo "抓內容圖...: {$PIC_URL} => {$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\n";
       `{$cmd}`;
       //exit();
@@ -165,11 +172,15 @@ function getRutenItemInfo($URL){
   //exit();
   //$OUTPUT['CMD']=$cmd;  
   //照片網址123-------------------------------------------
-  $pgj = get_between_new($data,"RT.context = ",";");
+  $pgj = get_between_new($data,"RT.context = ",";\n");
   $jpgj=json_decode($pgj,true);
   $imgs=ARRAY();
   $step=1;
   $pics=ARRAY();
+  //print_r($jpgj);
+  //exit();
+  
+  
   foreach($jpgj['item']['images'] as $v)
   {
     if($v=="") continue;
@@ -182,7 +193,7 @@ function getRutenItemInfo($URL){
   $OUTPUT['照片網址']=implode("\n",$pics);
 
   //照片-------------------------------------------
-  $pgj = get_between_new($data,"RT.context = ",";");
+  $pgj = get_between_new($data,"RT.context = ",";\n");
   $jpgj=json_decode($pgj,true);
   //$OUTPUT['照片']=print_r($jpgj,true);
   //print_r($jpgj); 
@@ -197,7 +208,7 @@ function getRutenItemInfo($URL){
     array_push($imgs,$bn);
     if(!is_file("{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}"))
     {
-      $cmd = "{$WGET} --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$URL}\" ";
+      $cmd = "\"{$WGET}\" --no-check-certificate -O \"{$PP}{$SP}{$UID}{$SP}{$kind_name_big5}{$SP}{$OUTPUT['商品編號']}{$SP}{$bn}\" -q --user-agent=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0\" --referer \"{$URL}\" --keep-session-cookies --load-cookies={$PP}{$SP}cookie.txt --save-cookies={$PP}{$SP}cookie.txt --header \"Cookie: {$CKS}\" \"{$URL}\" ";
       `{$cmd}`;      
     }
   }
