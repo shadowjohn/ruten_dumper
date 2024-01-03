@@ -119,19 +119,22 @@
   foreach($user_kinds as $kind_k=>$kind_v)
   {    
     $step++;
-    //if($step<=8) continue;
+    if($step<=49) continue;
     //if( $kind_v['name'] == '全部商品') continue;
     //if( $kind_v['name'] != '未分類商品(66)') continue;
     $kind_v['name'] = trim($kind_v['name']);
     $kind_name_big5 = utf8tobig5($kind_v['name'])."({$kind_v['totals']})";
+    //$kind_name_big5 = ($kind_v['name'])."({$kind_v['totals']})";
     //$kind_name_big5 = utf8tobig5("BOSCH");
     $kind_name_big5 = str_replace("?","",$kind_name_big5);
     $kind_name_big5 = str_replace("*","",$kind_name_big5);
-    $kind_name_big5 = str_replace("/","／",$kind_name_big5);
+    $kind_name_big5 = str_replace("/",utf8tobig5("／"),$kind_name_big5);
+    //$kind_name_big5 = str_replace_deep("/","／",$kind_name_big5);
+    //$kind_name_big5 = str_replace_deep(" ","_",$kind_name_big5);
     $kind_name_big5 = str_replace("\\","＼",$kind_name_big5);
     $kind_name_big5 = addslashes($kind_name_big5);
-//    print_r($user_kinds);
-//    exit();
+    //echo $kind_name_big5;
+    //exit();
     if(count($user_kinds)!=1)
     {
       if(
